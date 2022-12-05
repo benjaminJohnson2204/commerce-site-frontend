@@ -3,12 +3,15 @@ import {
   Formik,
   FormikHelpers,
   Form as FormikForm,
-} from "formik";
-import { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import SiteHeader from "../components/SiteHeader";
+} from 'formik';
+import { useEffect, useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import SiteHeader from '../components/SiteHeader';
+import authSlice from '../store/slices/auth';
+import axiosService from '../utils';
 
 interface LoginValues {
   username: string;
@@ -19,12 +22,11 @@ function LoginPage(props: { cookies: Cookies }) {
   const navigate = useNavigate();
   const [error, setError] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch("/api/authenticated").then((res: Response) => {
-      if (res.ok) {
-        navigate(searchParams.get("next") || "/");
-      }
+    axiosService.get(`/api/authenticated`).then((res) => {
+      navigate(searchParams.get('next') || '/');
     });
   }, [searchParams]);
 
@@ -34,13 +36,13 @@ function LoginPage(props: { cookies: Cookies }) {
       <div className='page'>
         <h1 className='m-3'>Login</h1>
         <Formik
-          initialValues={{ username: "", password: "" }}
+          initialValues={{ username: '', password: '' }}
           validate={(values: LoginValues) => {
             const errors: any = {};
             if (!values.username) {
-              errors.username = "Username is required";
+              errors.username = 'Username is required';
             } else if (!values.password) {
-              errors.password = "Password is required";
+              errors.password = 'Password is required';
             }
             return errors;
           }}
@@ -49,21 +51,15 @@ function LoginPage(props: { cookies: Cookies }) {
             { setSubmitting }: FormikHelpers<LoginValues>
           ) => {
             setTimeout(() => {
-              fetch("/api/login", {
-                credentials: "include",
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-CSRFToken": props.cookies.get("csrftoken"),
-                },
-                body: JSON.stringify(values),
-              }).then((res) => {
-                if (res.ok) {
-                  navigate(searchParams.get("next") || "/");
-                } else {
+              axiosService
+                .post(`/api/login`, values)
+                .then((res) => {
+                  dispatch(authSlice.actions.setAuthToken(res.data.token));
+                  navigate(searchParams.get('next') || '/');
+                })
+                .catch((err) => {
                   setError(true);
-                }
-              });
+                });
               setSubmitting(false);
             }, 400);
           }}
@@ -113,8 +109,8 @@ function LoginPage(props: { cookies: Cookies }) {
         {error && (
           <div className='text-danger'>Invalid username and/or password</div>
         )}
-        Don't have an account?{" "}
-        <Link to={`/register?next=${searchParams.get("next") || "/"}`}>
+        Don't have an account?{' '}
+        <Link to={`/register?next=${searchParams.get('next') || '/'}`}>
           Sign up
         </Link>
       </div>

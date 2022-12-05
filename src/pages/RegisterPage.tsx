@@ -4,12 +4,15 @@ import {
   Formik,
   FormikHelpers,
   Form as FormikForm,
-} from "formik";
-import { useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import SiteHeader from "../components/SiteHeader";
+} from 'formik';
+import { useEffect, useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import SiteHeader from '../components/SiteHeader';
+import authSlice from '../store/slices/auth';
+import axiosService from '../utils';
 
 interface RegisterValues {
   username: string;
@@ -22,14 +25,13 @@ interface RegisterValues {
 
 function RegisterPage(props: { cookies: Cookies }) {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch("/api/authenticated").then((res: Response) => {
-      if (res.ok) {
-        navigate(searchParams.get("next") || "/");
-      }
+    axiosService.get(`/api/authenticated`).then((res) => {
+      navigate(searchParams.get('next') || '/');
     });
   }, [searchParams]);
 
@@ -40,25 +42,25 @@ function RegisterPage(props: { cookies: Cookies }) {
         <h1 className='m-3'>Create an account</h1>
         <Formik
           initialValues={{
-            username: "",
-            email: "",
-            password: "",
-            confirmation: "",
+            username: '',
+            email: '',
+            password: '',
+            confirmation: '',
             receive_emails_order_updates: true,
             receive_emails_new_rugs: false,
           }}
           validate={(values: RegisterValues) => {
             const errors: any = {};
             if (!values.username) {
-              errors.username = "Username is required";
+              errors.username = 'Username is required';
             } else if (!values.email) {
-              errors.email = "Email address is required";
+              errors.email = 'Email address is required';
             } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-              errors.email = "Not a valid email address";
+              errors.email = 'Not a valid email address';
             } else if (!values.password) {
-              errors.password = "Password is required";
+              errors.password = 'Password is required';
             } else if (!values.confirmation) {
-              errors.confirmation = "Must confirm password";
+              errors.confirmation = 'Must confirm password';
             } else if (values.password !== values.confirmation) {
               errors.confirmation = "Passwords don't match";
             }
@@ -69,31 +71,22 @@ function RegisterPage(props: { cookies: Cookies }) {
             { setSubmitting }: FormikHelpers<RegisterValues>
           ) => {
             setTimeout(() => {
-              fetch("/api/register", {
-                credentials: "include",
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-CSRFToken": props.cookies.get("csrftoken"),
-                },
-                body: JSON.stringify(values),
-              })
+              axiosService
+                .post(`/api/register`, values)
                 .then((res) => {
-                  if (res.ok) {
-                    navigate(searchParams.get("next") || "/");
+                  dispatch(authSlice.actions.setAuthToken(res.data.token));
+                  navigate(searchParams.get('next') || '/');
+                })
+                .catch((err) => {
+                  if (err.response.data.hasOwnProperty('username')) {
+                    setError('Sorry, that username is already taken');
+                  } else if (err.response.data.hasOwnProperty('email')) {
+                    setError('Sorry, that email address is already taken');
                   } else {
-                    return res.json();
+                    setError('Sorry, unable to register');
                   }
                 })
-                .then((data) => {
-                  if (data.hasOwnProperty("username")) {
-                    setError("Sorry, that username is already taken");
-                  } else if (data.hasOwnProperty("email")) {
-                    setError("Sorry, that email address is already taken");
-                  } else {
-                    setError("Sorry, unable to register");
-                  }
-                });
+                .then((data) => {});
               setSubmitting(false);
             }, 400);
           }}
@@ -189,8 +182,8 @@ function RegisterPage(props: { cookies: Cookies }) {
           )}
         </Formik>
         <div className='text-danger'>{error}</div>
-        Already have an account?{" "}
-        <Link to={`/login?next=${searchParams.get("next") || "/"}`}>Login</Link>
+        Already have an account?{' '}
+        <Link to={`/login?next=${searchParams.get('next') || '/'}`}>Login</Link>
       </div>
     </div>
   );

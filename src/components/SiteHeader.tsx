@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
-import { Badge, Container, Nav, Navbar } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import authSlice from '../store/slices/auth';
+import axiosService from '../utils';
 
 export default function SiteHeader(props: {
   isAuthenticated?: boolean;
@@ -12,41 +15,39 @@ export default function SiteHeader(props: {
   const [authenticated, setAuthenticated] = useState(
     props.isAuthenticated || false
   );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (props.cartSize === undefined) {
-      fetch("/api/cart/size")
-        .then((res) => res.json())
-        .then((data) => setCartSize(data));
+      axiosService.get(`/api/cart/size`).then((res) => setCartSize(res.data));
     } else {
       setCartSize(props.cartSize);
     }
   }, [props.cartSize]);
 
   useEffect(() => {
-    fetch("/api/cart/size")
-      .then((res) => res.json())
-      .then((data) => setCartSize(data));
+    axiosService.get(`/api/cart/size`).then((res) => setCartSize(res.data));
   }, [props.reloadCart]);
 
   useEffect(() => {
     if (props.isAuthenticated === undefined) {
-      fetch("/api/authenticated").then((res) => {
-        if (res.ok) {
+      axiosService
+        .get(`/api/authenticated`)
+        .then((res) => {
           setAuthenticated(true);
-        } else {
+        })
+        .catch((err) => {
           setAuthenticated(false);
-        }
-      });
+        });
     } else {
       setAuthenticated(props.isAuthenticated);
     }
   }, [props.isAuthenticated]);
 
   const logout = () => {
-    fetch("/api/logout").then((res: Response) => {
-      if (res.ok) {
-      }
+    axiosService.get(`/api/logout`).then((res) => {
+      dispatch(authSlice.actions.setAuthToken(null));
+      window.location.reload();
     });
   };
 
@@ -74,7 +75,7 @@ export default function SiteHeader(props: {
               <Navbar.Brand href='/cart'>
                 Cart <Badge bg='primary'>{cartSize}</Badge>
               </Navbar.Brand>
-              <Navbar.Brand href={location.pathname} onClick={logout}>
+              <Navbar.Brand href='#' onClick={logout}>
                 Logout
               </Navbar.Brand>
             </Nav>

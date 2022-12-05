@@ -1,11 +1,11 @@
-import { Field, Formik, Form, FormikHelpers } from "formik";
-import { useEffect, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom";
-import SiteHeader from "../components/SiteHeader";
-import { getDayMonthYear, getTime } from "../utils";
-import { Order } from "./OrderPage";
+import { Field, Formik, Form, FormikHelpers } from 'formik';
+import { useEffect, useState } from 'react';
+import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
+import SiteHeader from '../components/SiteHeader';
+import axiosService, { getDayMonthYear, getTime } from '../utils';
+import { Order } from './OrderPage';
 
 function ProfilePage(props: { cookies: Cookies }) {
   const navigate = useNavigate();
@@ -15,15 +15,15 @@ function ProfilePage(props: { cookies: Cookies }) {
   const [preferenceUpdates, setPreferenceUpdates] = useState(0);
 
   useEffect(() => {
-    fetch("/api/order")
-      .then((res) => res.json())
-      .then((data) => setOrders(data["results"]));
+    axiosService
+      .get(`/api/order`)
+      .then((res) => setOrders(res.data['results']));
   }, []);
 
   useEffect(() => {
-    fetch("/api/authenticated")
-      .then((res) => res.json())
-      .then((data) => setEmailsNewRugs(data["receive_emails_new_rugs"]));
+    axiosService
+      .get(`/api/authenticated`)
+      .then((res) => setEmailsNewRugs(res.data['receive_emails_new_rugs']));
   }, [preferenceUpdates]);
 
   const goToOrderPage = (id: number) => {
@@ -58,7 +58,7 @@ function ProfilePage(props: { cookies: Cookies }) {
                   sm={2}
                   lg={4}
                   onClick={() => goToOrderPage(order.id)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <Col>{order.rugs.length}</Col>
                   <Col>${order.price}</Col>
@@ -68,11 +68,11 @@ function ProfilePage(props: { cookies: Cookies }) {
                     )}`}
                   </Col>
                   <Col>
-                    {order.status === "pe"
-                      ? "Pending"
-                      : order.status === "co"
-                      ? "Complete"
-                      : "Ready for pickup"}
+                    {order.status === 'pe'
+                      ? 'Pending'
+                      : order.status === 'co'
+                      ? 'Complete'
+                      : 'Ready for pickup'}
                   </Col>
                 </Row>
               ))}
@@ -81,7 +81,7 @@ function ProfilePage(props: { cookies: Cookies }) {
             <h2>You haven't made any orders yet</h2>
           )
         ) : (
-          "Loading..."
+          'Loading...'
         )}
         <h1 className='m-3'>Your email preferences</h1>
         <Formik
@@ -95,19 +95,9 @@ function ProfilePage(props: { cookies: Cookies }) {
           ) => {
             setTimeout(() => {
               if (values.receive_emails_new_rugs !== emailsNewRugs) {
-                fetch("/api/user", {
-                  credentials: "include",
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": props.cookies.get("csrftoken"),
-                  },
-                  body: JSON.stringify(values),
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    setPreferenceUpdates(preferenceUpdates + 1);
-                  });
+                axiosService.patch(`/api/user`, values).then((res) => {
+                  setPreferenceUpdates(preferenceUpdates + 1);
+                });
               }
               setSubmitting(false);
             }, 400);

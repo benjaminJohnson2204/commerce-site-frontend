@@ -1,14 +1,14 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { AxiosError } from 'axios';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosService from '../utils';
 
 export default function EnsureAdmin(props: { page: JSX.Element }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/admin").then((res: Response) => {
-      if (!res.ok) {
-        navigate("/");
-      }
+    axiosService.get(`/api/admin`).catch((err) => {
+      navigate('/');
     });
   }, []);
 

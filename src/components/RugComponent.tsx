@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Button, Card } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axiosService from '../utils';
 
 export interface Rug {
   id: number;
@@ -24,43 +25,36 @@ function RugComponent(props: {
   const location = useLocation();
 
   useEffect(() => {
-    fetch(`/api/cart/${props.rug.id}`).then((res) => {
-      setInCart(res.ok);
-    });
+    axiosService
+      .get(`/api/cart/${props.rug.id}`)
+      .then((res) => {
+        setInCart(true);
+      })
+      .catch((err) => {
+        setInCart(false);
+      });
   }, [props.reloadCart]);
 
   const addToCart = () => {
-    fetch("/api/cart", {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-      body: JSON.stringify({ rug: props.rug.id }),
-    }).then((res) => {
-      if (res.ok) {
-        navigate("/cart");
-      } else {
-        navigate("/login");
-      }
-    });
+    axiosService
+      .post(`/api/cart`, { rug: props.rug.id })
+      .then((res) => {
+        navigate('/cart');
+      })
+      .catch((err) => {
+        navigate('/login');
+      });
   };
 
   const deleteFromCart = () => {
-    fetch(`api/cart/${props.rug.id}`, {
-      credentials: "include",
-      method: "DELETE",
-      headers: {
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-    }).then((res) => {
-      if (res.ok) {
+    axiosService
+      .delete(`/api/cart/${props.rug.id}`)
+      .then((res) => {
         props.setReloadCart(!props.reloadCart);
-      } else {
-        navigate("/login");
-      }
-    });
+      })
+      .catch((err) => {
+        navigate('/login');
+      });
   };
 
   const goToRugPage = () => {
@@ -71,12 +65,12 @@ function RugComponent(props: {
     <Card className='m-3'>
       <Card.Img
         onClick={goToRugPage}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: 'pointer' }}
         variant='top'
         src={props.rug.image_url}
       />
       <Card.Body>
-        <Card.Title as='a' onClick={goToRugPage} style={{ cursor: "pointer" }}>
+        <Card.Title as='a' onClick={goToRugPage} style={{ cursor: 'pointer' }}>
           {props.rug.title}
         </Card.Title>
         <Card.Text>{`$${props.rug.price}`}</Card.Text>
@@ -85,7 +79,7 @@ function RugComponent(props: {
             <>
               <Card.Text>This rug is in your cart</Card.Text>
               <p>
-                <Button onClick={() => navigate("/cart")}>View cart</Button>
+                <Button onClick={() => navigate('/cart')}>View cart</Button>
               </p>
               <p>
                 <Button variant='warning' onClick={deleteFromCart}>
@@ -99,7 +93,7 @@ function RugComponent(props: {
         ) : (
           <div>
             <Link to={`login?next=${location.pathname}`}>Login</Link>
-            {" or"}{" "}
+            {' or'}{' '}
             <Link to={`register?next=${location.pathname}`}>sign up</Link> to
             buy
           </div>

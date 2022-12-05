@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Image, Button, Form } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Rug } from "../components/RugComponent";
-import SiteHeader from "../components/SiteHeader";
+import React, { useEffect, useState } from 'react';
+import { Col, Container, Row, Image, Button, Form } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Rug } from '../components/RugComponent';
+import SiteHeader from '../components/SiteHeader';
+import axiosService from '../utils';
 
 function CheckoutPage(props: { cookies: Cookies }) {
   const navigate = useNavigate();
@@ -13,58 +14,45 @@ function CheckoutPage(props: { cookies: Cookies }) {
   const [invalid, setInvalid] = useState(false);
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState<number>();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch("/api/cart")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data["cart"].length) {
-          navigate("/cart");
-        }
-        setCart(data["cart"]);
-        setTotalPrice(data["price"]);
-      });
+    axiosService.get(`/api/cart`).then((res) => {
+      if (!res.data['cart'].length) {
+        navigate('/cart');
+      }
+      setCart(res.data['cart']);
+      setTotalPrice(res.data['price']);
+    });
   }, []);
 
   const verifyPassword = (event: React.ChangeEvent<any>) => {
     event.preventDefault();
-    fetch("/api/verify-password", {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-      body: JSON.stringify({
+    axiosService
+      .post(`/api/verify-password`, {
         password: event.target[0].value,
-      }),
-    }).then((res) => {
-      if (res.ok) {
+      })
+      .then((res) => {
         setPasswordVerified(true);
-      } else {
+      })
+      .catch((err) => {
         setInvalid(true);
-      }
-    });
+      });
   };
 
   const placeOrder = () => {
-    fetch("/api/order", {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((data) => navigate(`/order/${data["id"]}`));
-      } else if (res.status === 403) {
-        navigate(`/login?next=${location.pathname}`);
-      } else {
-        res.json().then((data) => setError(data));
-      }
-    });
+    axiosService
+      .post(`/api/order`)
+      .then((res) => {
+        navigate(`/order/${res.data['id']}`);
+      })
+      .catch((err) => {
+        if (err.response.status === 403) {
+          navigate(`/login?next=${location.pathname}`);
+        } else {
+          setError(err.response.data);
+        }
+      });
   };
 
   return (
@@ -76,7 +64,7 @@ function CheckoutPage(props: { cookies: Cookies }) {
           <>
             <h4>Review your cart</h4>
             {cart === undefined ? (
-              "Loading..."
+              'Loading...'
             ) : (
               <Container fluid={true} className='m-3'>
                 <Row>
@@ -115,7 +103,7 @@ function CheckoutPage(props: { cookies: Cookies }) {
                       Place Order
                     </Button>
                     {error &&
-                      "There was a problem placing your order: " + error}
+                      'There was a problem placing your order: ' + error}
                   </Col>
                 </Row>
               </Container>

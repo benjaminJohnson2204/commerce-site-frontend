@@ -1,15 +1,15 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { AxiosError } from 'axios';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axiosService from '../utils';
 
 export default function EnsureAuthenticated(props: { page: JSX.Element }) {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    fetch("/api/authenticated").then((res: Response) => {
-      if (!res.ok) {
-        navigate(`/login?next=${location.pathname}`);
-      }
+    axiosService.get(`/api/authenticated`).catch((err) => {
+      navigate(`/login?next=${location.pathname}`);
     });
   }, []);
 

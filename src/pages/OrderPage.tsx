@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Col, Container, Row, Image, Card } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
-import { Rug } from "../components/RugComponent";
-import SiteHeader from "../components/SiteHeader";
-import { getDayMonthYear, getTime } from "../utils";
+import { useEffect, useState } from 'react';
+import { Col, Container, Row, Image, Card } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Rug } from '../components/RugComponent';
+import SiteHeader from '../components/SiteHeader';
+import axiosService, { getDayMonthYear, getTime } from '../utils';
 
 export interface Order {
   id: number;
@@ -23,16 +23,15 @@ export default function OrderPage() {
   const [rugs, setRugs] = useState<Rug[]>();
 
   useEffect(() => {
-    fetch(`/api/order/${id}`).then((res) => {
-      if (res.ok) {
-        res.json().then((data) => {
-          setOrder(data["order"]);
-          setRugs(data["rugs"]);
-        });
-      } else {
-        navigate("/profile");
-      }
-    });
+    axiosService
+      .get(`/api/order/${id}`)
+      .then((res) => {
+        setOrder(res.data['order']);
+        setRugs(res.data['rugs']);
+      })
+      .catch((err) => {
+        navigate('/profile');
+      });
   }, []);
 
   const goToRugPage = (id: number) => {
@@ -47,23 +46,23 @@ export default function OrderPage() {
         {order && rugs ? (
           <Container>
             <p>
-              {order.status === "pe"
-                ? "Pending"
-                : order.status === "co"
-                ? "Complete"
-                : "Ready for pickup"}
+              {order.status === 'pe'
+                ? 'Pending'
+                : order.status === 'co'
+                ? 'Complete'
+                : 'Ready for pickup'}
             </p>
             <p>{`Placed on ${getDayMonthYear(order.date_placed)} at ${getTime(
               order.date_placed
             )}`}</p>
             <p>${order.price}</p>
-            <p>{rugs.length + (rugs.length > 1 ? " rugs:" : " rug:")}</p>
+            <p>{rugs.length + (rugs.length > 1 ? ' rugs:' : ' rug:')}</p>
             {rugs.map((rug) => (
               <Row>
                 <Col xs={12} md={6} lg={4}>
                   <Image
                     onClick={() => goToRugPage(rug.id)}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     src={rug.image_url}
                     width='100%'
                     height='auto'
@@ -82,7 +81,7 @@ export default function OrderPage() {
             ))}
           </Container>
         ) : (
-          "Loading..."
+          'Loading...'
         )}
       </div>
     </div>

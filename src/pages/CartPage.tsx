@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Col, Container, Row, Image, Button } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { Rug } from "../components/RugComponent";
-import SiteHeader from "../components/SiteHeader";
+import { useEffect, useState } from 'react';
+import { Col, Container, Row, Image, Button } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { Rug } from '../components/RugComponent';
+import SiteHeader from '../components/SiteHeader';
+import axiosService from '../utils';
 
 function CartPage(props: { cookies: Cookies }) {
   const [cart, setCart] = useState([]);
@@ -10,32 +11,20 @@ function CartPage(props: { cookies: Cookies }) {
   let [reloadCart, setReloadCart] = useState(false);
 
   useEffect(() => {
-    fetch("/api/cart")
-      .then((res) => res.json())
-      .then((data) => {
-        setCart(data["cart"]);
-        setTotalPrice(data["price"]);
-      });
+    axiosService.get(`/api/cart`).then((res) => {
+      setCart(res.data['cart']);
+      setTotalPrice(res.data['price']);
+    });
   }, [reloadCart]);
 
   const deleteFromCart = (id: number) => {
-    fetch(`api/cart/${id}`, {
-      credentials: "include",
-      method: "DELETE",
-      headers: {
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-    }).then((res) => setReloadCart(!reloadCart));
+    axiosService
+      .delete(`/api/cart/${id}`)
+      .then((res) => setReloadCart(!reloadCart));
   };
 
   const clearCart = () => {
-    fetch("/api/cart", {
-      credentials: "include",
-      method: "DELETE",
-      headers: {
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-    }).then((res) => setReloadCart(!reloadCart));
+    axiosService.delete(`/api/cart`).then((res) => setReloadCart(!reloadCart));
   };
 
   return (
@@ -44,7 +33,7 @@ function CartPage(props: { cookies: Cookies }) {
       <div className='page'>
         <h1 className='m-3'>Your Cart</h1>
         {cart === undefined ? (
-          "Loading..."
+          'Loading...'
         ) : (
           <Container fluid={true} className='m-3'>
             <Row>

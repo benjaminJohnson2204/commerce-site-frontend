@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Col, Container, Row, Image, Button } from "react-bootstrap";
-import { Cookies, withCookies } from "react-cookie";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { Rug } from "../components/RugComponent";
-import SiteHeader from "../components/SiteHeader";
+import { useEffect, useState } from 'react';
+import { Col, Container, Row, Image, Button } from 'react-bootstrap';
+import { Cookies, withCookies } from 'react-cookie';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Rug } from '../components/RugComponent';
+import SiteHeader from '../components/SiteHeader';
+import axiosService from '../utils';
 
 function RugPage(props: { cookies: Cookies }) {
   const [rug, setRug] = useState<Rug>();
@@ -16,16 +17,16 @@ function RugPage(props: { cookies: Cookies }) {
   const location = useLocation();
 
   useEffect(() => {
-    fetch(`/api/rug/${id}`)
-      .then((res) => res.json())
-      .then((data) => setRug(data));
+    axiosService.get(`/api/rug/${id}`).then((res) => setRug(res.data));
 
-    fetch(`/api/cart/${id}`) // Check if rug is in the user's cart
+    axiosService
+      .get(`/api/cart/${id}`) // Check if rug is in the user's cart
       .then((res) => {
-        if (res.ok) {
-          setInCart(true);
-          setAuthenticated(true);
-        } else if (res.status === 404) {
+        setInCart(true);
+        setAuthenticated(true);
+      })
+      .catch((err) => {
+        if (err.response.status === 404) {
           setInCart(false);
           setAuthenticated(true);
         } else {
@@ -35,31 +36,22 @@ function RugPage(props: { cookies: Cookies }) {
   }, [reload]);
 
   const addToCart = () => {
-    fetch("/api/cart", {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-      body: JSON.stringify({ rug: id }),
-    }).then((res) => {
-      if (res.ok) {
-        navigate("/cart");
-      } else {
-        navigate("/login");
-      }
-    });
+    axiosService
+      .post(`/api/cart`, {
+        rug: id,
+      })
+      .then((res) => {
+        navigate('/cart');
+      })
+      .catch((err) => {
+        navigate('/login');
+      });
   };
 
   const deleteFromCart = () => {
-    fetch(`api/cart/${rug!.id}`, {
-      credentials: "include",
-      method: "DELETE",
-      headers: {
-        "X-CSRFToken": props.cookies.get("csrftoken"),
-      },
-    }).then((res) => setReload(!reload));
+    axiosService
+      .delete(`api/cart/${rug!.id}`)
+      .then((res) => setReload(!reload));
   };
 
   return (
@@ -67,7 +59,7 @@ function RugPage(props: { cookies: Cookies }) {
       <SiteHeader isAuthenticated={authenticated} />
       <div className='page'>
         {rug === undefined ? (
-          "Loading..."
+          'Loading...'
         ) : (
           <Container
             fluid={true}
@@ -80,7 +72,7 @@ function RugPage(props: { cookies: Cookies }) {
                 </Col>
               )}
               <Col xs={12} md={6}>
-                {rug.status === "av" ? "Available" : "Not available"}
+                {rug.status === 'av' ? 'Available' : 'Not available'}
                 <h2>{rug.title}</h2>
                 <p>{`$${rug.price}`}</p>
                 <p>{rug.description}</p>
@@ -89,7 +81,7 @@ function RugPage(props: { cookies: Cookies }) {
                     <>
                       <p>This rug is in your cart</p>
                       <p>
-                        <Button onClick={() => navigate("/cart")}>
+                        <Button onClick={() => navigate('/cart')}>
                           View cart
                         </Button>
                       </p>
@@ -101,20 +93,20 @@ function RugPage(props: { cookies: Cookies }) {
                     </>
                   ) : (
                     <>
-                      {rug.status === "av" ? (
+                      {rug.status === 'av' ? (
                         <Button onClick={addToCart}>Add to cart</Button>
                       ) : (
-                        ""
+                        ''
                       )}
                     </>
                   )
                 ) : (
                   <div>
                     <Link to={`login?next=${location.pathname}`}>Login</Link>
-                    {" or"}{" "}
+                    {' or'}{' '}
                     <Link to={`register?next=${location.pathname}`}>
                       sign up
-                    </Link>{" "}
+                    </Link>{' '}
                     to buy
                   </div>
                 )}
