@@ -1,0 +1,36 @@
+.page {
+  height : 100vh;
+  width : 100vw;
+  display : flex;
+  flex-direction: column;
+  font-family : "sans-seriff";
+  text-align: center;
+  align-items: center;
+}
+
+.site-header { 
+  width: 100%;
+  padding : 50px;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.login-form {
+  width: 50%;
+  margin-top: 10%;
+}
+
+.rug-card {
+  margin: 5%;
+}
+
+.rug-page-image {
+  width : 100%;
+  height : auto;
+}
