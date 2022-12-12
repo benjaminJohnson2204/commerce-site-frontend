@@ -26,12 +26,15 @@ export default function OrderPage() {
     axiosService
       .get(`/api/order/${id}`)
       .then((res) => {
-        setOrder(res.data['order']);
+        setOrder(res.data);
         setRugs(res.data['rugs']);
       })
       .catch((err) => {
         navigate('/profile');
       });
+    axiosService.get(`/api/rug/by-order/${id}`).then((res) => {
+      setRugs(res.data['results']);
+    });
   }, []);
 
   const goToRugPage = (id: number) => {

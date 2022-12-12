@@ -18,10 +18,13 @@ function CheckoutPage(props: { cookies: Cookies }) {
 
   useEffect(() => {
     axiosService.get(`/api/cart`).then((res) => {
-      if (!res.data['cart'].length) {
+      if (!res.data['results'].length) {
         navigate('/cart');
       }
-      setCart(res.data['cart']);
+      setCart(res.data['results']);
+    });
+
+    axiosService.get(`/api/cart/price`).then((res) => {
       setTotalPrice(res.data['price']);
     });
   }, []);

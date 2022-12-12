@@ -12,7 +12,9 @@ function CartPage(props: { cookies: Cookies }) {
 
   useEffect(() => {
     axiosService.get(`/api/cart`).then((res) => {
-      setCart(res.data['cart']);
+      setTotalPrice(res.data['price']);
+    });
+    axiosService.get(`/api/cart/price`).then((res) => {
       setTotalPrice(res.data['price']);
     });
   }, [reloadCart]);

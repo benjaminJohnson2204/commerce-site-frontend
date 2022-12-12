@@ -19,14 +19,16 @@ export default function SiteHeader(props: {
 
   useEffect(() => {
     if (props.cartSize === undefined) {
-      axiosService.get(`/api/cart/size`).then((res) => setCartSize(res.data));
+      axiosService
+        .get(`/api/cart`)
+        .then((res) => setCartSize(res.data['count']));
     } else {
       setCartSize(props.cartSize);
     }
   }, [props.cartSize]);
 
   useEffect(() => {
-    axiosService.get(`/api/cart/size`).then((res) => setCartSize(res.data));
+    axiosService.get(`/api/cart`).then((res) => setCartSize(res.data['count']));
   }, [props.reloadCart]);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function SiteHeader(props: {
   }, [props.isAuthenticated]);
 
   const logout = () => {
-    axiosService.get(`/api/logout`).then((res) => {
+    axiosService.post(`/api/logout`).then((res) => {
       dispatch(authSlice.actions.setAuthToken(null));
       window.location.reload();
     });
