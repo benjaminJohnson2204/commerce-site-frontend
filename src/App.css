@@ -1,5 +1,9 @@
+.btn {
+  border-radius: 18px;
+}
+
 .page {
-  height : 100vh;
+  height : calc(100vh - 56px);
   width : 100vw;
   display : flex;
   flex-direction: column;
@@ -33,4 +37,14 @@
 .rug-page-image {
   width : 100%;
   height : auto;
+}
+
+.search-input {
+  margin-right: 10px;
+  border-radius: 18px;
+}
+
+.order-results-dropdown {
+  border-radius: 20px;
+  padding: 2px 5px 4px 5px;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
+import { Trash } from 'react-bootstrap-icons';
 import { Cookies, withCookies } from 'react-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axiosService from '../utils';
@@ -62,7 +63,7 @@ function RugComponent(props: {
   };
 
   return (
-    <Card className='m-3'>
+    <Card className='m-3 p-3' style={{ backgroundColor: '#E0E0E0' }}>
       <Card.Img
         onClick={goToRugPage}
         style={{ cursor: 'pointer' }}
@@ -70,7 +71,11 @@ function RugComponent(props: {
         src={props.rug.image_url}
       />
       <Card.Body>
-        <Card.Title as='a' onClick={goToRugPage} style={{ cursor: 'pointer' }}>
+        <Card.Title
+          as='a'
+          onClick={goToRugPage}
+          style={{ cursor: 'pointer', fontSize: 18, fontWeight: 600 }}
+        >
           {props.rug.title}
         </Card.Title>
         <Card.Text>{`$${props.rug.price}`}</Card.Text>
@@ -78,14 +83,18 @@ function RugComponent(props: {
           inCart ? (
             <>
               <Card.Text>This rug is in your cart</Card.Text>
-              <p>
-                <Button onClick={() => navigate('/cart')}>View cart</Button>
-              </p>
-              <p>
-                <Button variant='warning' onClick={deleteFromCart}>
-                  Remove from cart
+              <div>
+                <Button className='m-1' onClick={() => navigate('/cart')}>
+                  View cart
                 </Button>
-              </p>
+                <Button
+                  className='m-1'
+                  variant='danger'
+                  onClick={deleteFromCart}
+                >
+                  <Trash />
+                </Button>
+              </div>
             </>
           ) : (
             <Button onClick={addToCart}>Add to cart</Button>

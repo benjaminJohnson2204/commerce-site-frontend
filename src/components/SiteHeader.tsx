@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
+import {
+  Badge,
+  Container,
+  Dropdown,
+  Nav,
+  Navbar,
+  NavDropdown,
+} from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import authSlice from '../store/slices/auth';
@@ -73,7 +80,12 @@ export default function SiteHeader(props: {
         <Navbar.Collapse className='justify-content-end'>
           {authenticated ? (
             <Nav>
-              <Navbar.Brand href='/profile'>Profile</Navbar.Brand>
+              <NavDropdown title='Profile'>
+                <Dropdown.Item href='/orders'>Orders</Dropdown.Item>
+                <Dropdown.Item href='/email-preferences'>
+                  Email Preferences
+                </Dropdown.Item>
+              </NavDropdown>
               <Navbar.Brand href='/cart'>
                 Cart <Badge bg='primary'>{cartSize}</Badge>
               </Navbar.Brand>

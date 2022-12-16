@@ -71,7 +71,7 @@ function CheckoutPage(props: { cookies: Cookies }) {
             ) : (
               <Container fluid={true} className='m-3'>
                 <Row>
-                  <Col xs={12} sm={6}>
+                  <Col xs={12} sm={10}>
                     <Container fluid={true}>
                       {cart.map((rug: Rug) => (
                         <Row>
@@ -100,7 +100,7 @@ function CheckoutPage(props: { cookies: Cookies }) {
                       </Row>
                     </Container>
                   </Col>
-                  <Col xs={12} sm={6}>
+                  <Col xs={12} sm={2}>
                     <p>Total: ${totalPrice}</p>
                     <Button variant='success' onClick={placeOrder}>
                       Place Order

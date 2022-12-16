@@ -68,11 +68,17 @@ function RugPage(props: { cookies: Cookies }) {
             <Row>
               {rug.image_url && (
                 <Col xs={12} md={6}>
-                  <Image src={rug.image_url} width='100%' height='auto' />
+                  <Image src={rug.image_url} width='auto' height='100%' />
                 </Col>
               )}
               <Col xs={12} md={6}>
-                {rug.status === 'av' ? 'Available' : 'Not available'}
+                <h4
+                  className={
+                    rug.status === 'av' ? 'text-success' : 'text-error'
+                  }
+                >
+                  {rug.status === 'av' ? 'Available' : 'Not available'}
+                </h4>
                 <h2>{rug.title}</h2>
                 <p>{`$${rug.price}`}</p>
                 <p>{rug.description}</p>

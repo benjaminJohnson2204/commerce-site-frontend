@@ -99,10 +99,10 @@ export default function HomePage(props: any) {
                   name='search'
                   type='search'
                   placeholder='Search for a rug'
-                  className='me-2'
+                  className='search-input'
                   aria-label='Search'
                 />
-                <Button variant='outline-secondary' type='submit'>
+                <Button variant='secondary' type='submit'>
                   Search
                 </Button>
               </Form>
@@ -111,6 +111,7 @@ export default function HomePage(props: any) {
             <Row className='justify-content-center mb-3'>
               <h5 className='mx-3'>Order results by </h5>
               <Form.Select
+                className='order-results-dropdown'
                 aria-label='Order results'
                 onChange={setOrdering}
                 defaultValue={searchParams.get('ordering') || '-date_created'}

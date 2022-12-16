@@ -27,7 +27,6 @@ export default function OrderPage() {
       .get(`/api/order/${id}`)
       .then((res) => {
         setOrder(res.data);
-        setRugs(res.data['rugs']);
       })
       .catch((err) => {
         navigate('/profile');
@@ -45,43 +44,54 @@ export default function OrderPage() {
     <div>
       <SiteHeader isAuthenticated={true} />
       <div className='page'>
-        <h1 className='m-3'>Order #{id}</h1>
         {order && rugs ? (
-          <Container>
-            <p>
-              {order.status === 'pe'
-                ? 'Pending'
-                : order.status === 'co'
-                ? 'Complete'
-                : 'Ready for pickup'}
-            </p>
-            <p>{`Placed on ${getDayMonthYear(order.date_placed)} at ${getTime(
-              order.date_placed
-            )}`}</p>
-            <p>${order.price}</p>
-            <p>{rugs.length + (rugs.length > 1 ? ' rugs:' : ' rug:')}</p>
-            {rugs.map((rug) => (
-              <Row>
-                <Col xs={12} md={6} lg={4}>
-                  <Image
-                    onClick={() => goToRugPage(rug.id)}
-                    style={{ cursor: 'pointer' }}
-                    src={rug.image_url}
-                    width='100%'
-                    height='auto'
-                  />
-                </Col>
-                <Col xs={12} md={6} lg={4}>
-                  <Card.Text as='a' onClick={() => goToRugPage(rug.id)}>
-                    {rug.title}
-                  </Card.Text>
-                  <p>{rug.description}</p>
-                </Col>
-                <Col xs={12} md={6} lg={4}>
-                  <p>{`$${rug.price}`}</p>
-                </Col>
-              </Row>
-            ))}
+          <Container
+            fluid={true}
+            className='m-3 justify-content-center align-items-center'
+          >
+            <Row>
+              <Col xs={12} md={4} className='pt-5'>
+                <h1 className='m-3'>Order #{id}</h1>
+                <p>
+                  {order.status === 'pe'
+                    ? 'Pending'
+                    : order.status === 'co'
+                    ? 'Complete'
+                    : 'Ready for pickup'}
+                </p>
+                <p>{`Placed on ${getDayMonthYear(
+                  order.date_placed
+                )} at ${getTime(order.date_placed)}`}</p>
+                <p>${order.price}</p>
+              </Col>
+              <Col xs={12} md={8}>
+                <h3 className='mb-4'>
+                  {rugs.length + (rugs.length > 1 ? ' rugs:' : ' rug:')}
+                </h3>
+                {rugs.map((rug) => (
+                  <Row>
+                    <Col xs={12} md={6} lg={4}>
+                      <Image
+                        onClick={() => goToRugPage(rug.id)}
+                        style={{ cursor: 'pointer' }}
+                        src={rug.image_url}
+                        width='100%'
+                        height='auto'
+                      />
+                    </Col>
+                    <Col xs={12} md={6} lg={4}>
+                      <Card.Text as='a' onClick={() => goToRugPage(rug.id)}>
+                        {rug.title}
+                      </Card.Text>
+                      <p>{rug.description}</p>
+                    </Col>
+                    <Col xs={12} md={6} lg={4}>
+                      <p>{`$${rug.price}`}</p>
+                    </Col>
+                  </Row>
+                ))}
+              </Col>
+            </Row>
           </Container>
         ) : (
           'Loading...'

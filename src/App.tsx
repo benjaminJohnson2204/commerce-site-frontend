@@ -6,7 +6,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CartPage from './pages/CartPage';
 import NotFoundPage from './pages/NotFoundPage';
-import ProfilePage from './pages/ProfilePage';
 import EnsureAuthenticated from './components/EnsureAuthenticated';
 import RugPage from './pages/RugPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -16,6 +15,8 @@ import AddRugPage from './pages/AddRugPage';
 import store, { persistor } from './store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import OrdersPage from './pages/OrdersPage';
+import EmailPreferencesPage from './pages/EmailPreferencesPage';
 
 function App() {
   return (
@@ -27,8 +28,14 @@ function App() {
               <Route path='*' element={<NotFoundPage />} />
               <Route path='/' element={<HomePage />} />
               <Route
-                path='profile'
-                element={<EnsureAuthenticated page={<ProfilePage />} />}
+                path='orders'
+                element={<EnsureAuthenticated page={<OrdersPage />} />}
+              />
+              <Route
+                path='email-preferences'
+                element={
+                  <EnsureAuthenticated page={<EmailPreferencesPage />} />
+                }
               />
               <Route
                 path='cart'

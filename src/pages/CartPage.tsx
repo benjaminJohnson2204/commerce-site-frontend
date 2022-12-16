@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Image, Button } from 'react-bootstrap';
+import { Trash } from 'react-bootstrap-icons';
 import { Cookies, withCookies } from 'react-cookie';
 import { Rug } from '../components/RugComponent';
 import SiteHeader from '../components/SiteHeader';
@@ -12,7 +13,8 @@ function CartPage(props: { cookies: Cookies }) {
 
   useEffect(() => {
     axiosService.get(`/api/cart`).then((res) => {
-      setTotalPrice(res.data['price']);
+      console.log(res.data);
+      setCart(res.data['results']);
     });
     axiosService.get(`/api/cart/price`).then((res) => {
       setTotalPrice(res.data['price']);
@@ -39,7 +41,7 @@ function CartPage(props: { cookies: Cookies }) {
         ) : (
           <Container fluid={true} className='m-3'>
             <Row>
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm={10}>
                 {cart.length ? (
                   <Container fluid={true}>
                     {cart.map((rug: Rug) => (
@@ -58,10 +60,10 @@ function CartPage(props: { cookies: Cookies }) {
                         <Col xs={12} md={6} lg={4}>
                           <p>{`$${rug.price}`}</p>
                           <Button
-                            variant='warning'
+                            variant='danger'
                             onClick={() => deleteFromCart(rug.id)}
                           >
-                            Remove from Cart
+                            <Trash />
                           </Button>
                         </Col>
                       </Row>
@@ -85,7 +87,7 @@ function CartPage(props: { cookies: Cookies }) {
                 )}
               </Col>
               {cart.length > 0 && (
-                <Col xs={12} sm={6}>
+                <Col xs={12} sm={2}>
                   <p>Total: ${totalPrice}</p>
                   <Button as='a' href='/checkout'>
                     Checkout
