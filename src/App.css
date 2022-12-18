@@ -12,6 +12,12 @@
   align-items: center;
 }
 
+.rug-component {
+  background-color: #E0E0E0;
+  height: calc(100% - 2rem);
+  border: 2px solid black;
+}
+
 .site-header { 
   width: 100%;
   padding : 50px;
