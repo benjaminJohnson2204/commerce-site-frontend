@@ -26,6 +26,7 @@ export default function HomePage(props: any) {
   const [admin, setAdmin] = useState(false);
   const [rugsResponse, setRugsResponse] = useState<RugListResponse>();
   const [cart, setCart] = useState<Rug[]>();
+  const [cartSize, setCartSize] = useState<number>();
   const [reloadCart, setReloadCart] = useState(false);
 
   const dispatch = useDispatch();
@@ -34,13 +35,16 @@ export default function HomePage(props: any) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [rugsResponse]);
+    if (!loading) {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [rugsResponse, loading]);
 
   useEffect(() => {
     axiosService.get(`/api/cart`).then((res) => {
       setCart(res.data['results']);
+      setCartSize(res.data['count']);
     });
   }, [reloadCart]);
 
@@ -126,7 +130,11 @@ export default function HomePage(props: any) {
 
   return (
     <div>
-      <SiteHeader isAuthenticated={authenticated} reloadCart={reloadCart} />
+      <SiteHeader
+        isAuthenticated={authenticated}
+        reloadCart={reloadCart}
+        cartSize={cartSize ?? 0}
+      />
       <div className='page'>
         <Container fluid={true} className='g-3'>
           <h1 className='m-4'>Welcome, {(user && user.username) || 'guest'}</h1>
