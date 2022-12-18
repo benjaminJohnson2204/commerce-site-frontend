@@ -1,46 +1,50 @@
-# Getting Started with Create React App
+# Commerce Website Front end
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the front end of a website I created where users can view and "buy" rugs (no money is actually spent; this is not a real commerce site) and administrators can post new rugs. I made this project for fun and to improve at programming and web development.
 
-## Available Scripts
+The website is hosted on Vercel at http://commerce-site-frontend.vercel.app/.
 
-In the project directory, you can run:
+The back end is in a separate repository on a separate domain, which the front end can call. The back end repository can be found at https://github.com/benjaminJohnson2204/commerce-site-backend and its documentation can be found at https://commerce-site-backend.vercel.app/api/docs/.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+I developed the front end of this project using React, TypeScript, React Router, Redux, Bootstrap, and Formik.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Scripts
 
-### `npm test`
+This project is a React project and uses the standard React project scripts. The following commands can all be run from the root directory:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Install dependencies: `npm install`
 
-### `npm run build`
+- Run the project: `npm start`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Build the project: `npm build`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Code Structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The source code for the front end can be found in the `src` directory. Within `src`, the `components` directory contains reusable components, the `pages` directory contains the code for each page on the site, and the `store` directory contains code for the Redux store.
 
-### `npm run eject`
+## Pages and Flows
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The home page displays all available rugs, with options to search for rugs, add filters, and change the ordering. The navigation header contains links to register an account and login, or, for users who are already logged in, to their cart and profile options.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+When a user clicks on a rug, they are taken to `/rug/<id>`, a page showing information about that rug. From this page or the home page, users can add rugs to their cart or remove them from their cart, as long as they are logged in.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Users can see all the rugs in their cart at `/cart`. From there, they can remove an individual rug from their cart, or clear all rugs from their cart. Users can also checkout at the `/checkout` page.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Before checking out, users must verify their password and confirm their order (all the rugs in it and its total price). On a real-world commerce site, users would also enter their payment information, but for this project, they just click a confirmation button and then the order is placed.
 
-## Learn More
+Users can see all their past orders at `/orders`, which is accessible from the navigation header. This page shows a paginated table of their past orders, with options to change the ordering and filter by status. Users can click on any row in this table to be taken to a page, `/order/<id>`, with information about that order.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Finally, users can change their email preferences at `/email-preferences`, which is accessible from the navigation header.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Tech Usage
+
+I used the following frameworks/libraries for these purposes:
+
+- **React**: React is the project's overarching framework.
+- **TypeScript**: I wrote all my project code in TypeScript. ypeScript is JavaScript with an additional typing system to help catch errors earlier on.
+- **React Router**: I used React Router for routing different URLs to different pages, as well as parsing search and query parameters and navigating to different pages.
+- **Redux**: I used Redux for state management with users' authentication tokens. I used React's hooks for all my other state management, but with the authentication token, it needs to be persisted across pages and components, which is easier with a Redux store.
+- **Bootstrap**: Bootstrap is a styling library, and React Bootstrap is a library of React Components built upon React. For styling the front end, I used mainly React Bootstrap, with some Bootstrap classes, and a little of my own CSS.
+- **Formik**: Formik is a library for forms in React and TypeScript. I used it for the login and registration forms.
