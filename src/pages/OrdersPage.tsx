@@ -18,6 +18,7 @@ function ProfilePage(props: { cookies: Cookies }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [loading, setLoading] = useState(true);
   const [filtersShown, setFiltersShown] = useState(true);
   const [statusFiltersOpen, setStatusFiltersOpen] = useState(false);
   const statusFiltersTarget = useRef(null);
@@ -26,6 +27,7 @@ function ProfilePage(props: { cookies: Cookies }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
+    setLoading(true);
     axiosService
       .get(
         `/api/order?page=${page}${
@@ -38,7 +40,10 @@ function ProfilePage(props: { cookies: Cookies }) {
             : ''
         }`
       )
-      .then((res) => setOrdersResponse(res.data));
+      .then((res) => {
+        setOrdersResponse(res.data);
+        setLoading(false);
+      });
   }, [location, page]);
 
   const goToOrderPage = (id: number) => {
@@ -123,8 +128,9 @@ function ProfilePage(props: { cookies: Cookies }) {
       items.push(
         <Pagination.Item
           key={i}
-          active={page === i}
-          onChange={() => setPage(i)}
+          active={page === i + 1}
+          activeLabel=''
+          onClick={() => setPage(i + 1)}
         >
           {i + 1}
         </Pagination.Item>
@@ -149,7 +155,9 @@ function ProfilePage(props: { cookies: Cookies }) {
             Clear filters
           </Button>
         </Row>
-        {ordersResponse?.results ? (
+        {loading || !ordersResponse ? (
+          <h4 className='my-5'>Loading...</h4>
+        ) : (
           <>
             <Table className='m-3' style={{ maxWidth: 1200 }}>
               <thead>
@@ -270,23 +278,23 @@ function ProfilePage(props: { cookies: Cookies }) {
                     ordersResponse?.previous === null &&
                     ordersResponse?.next === null
                   }
-                  onChange={() => setPage(1)}
+                  onClick={() => setPage(1)}
                 />
                 <Pagination.Prev
                   disabled={ordersResponse?.previous === null}
-                  onChange={() => setPage(page - 1)}
+                  onClick={() => setPage(page - 1)}
                 />
                 {renderPaginationItems()}
                 <Pagination.Next
                   disabled={ordersResponse?.next === null}
-                  onChange={() => setPage(page + 1)}
+                  onClick={() => setPage(page + 1)}
                 />
                 <Pagination.Last
                   disabled={
                     ordersResponse?.previous === null &&
                     ordersResponse?.next === null
                   }
-                  onChange={() =>
+                  onClick={() =>
                     setPage(
                       Math.ceil(
                         ordersResponse.count / ordersResponse.results.length
@@ -297,8 +305,6 @@ function ProfilePage(props: { cookies: Cookies }) {
               </>
             </Pagination>
           </>
-        ) : (
-          'Loading...'
         )}
         {ordersResponse?.results.length === 0 &&
           (searchParams.get('status') || searchParams.get('ordering') ? (
