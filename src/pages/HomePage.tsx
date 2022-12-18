@@ -35,7 +35,7 @@ export default function HomePage(props: any) {
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [rugsResponse]);
 
   useEffect(() => {
     setLoading(true);
@@ -83,7 +83,7 @@ export default function HomePage(props: any) {
       axiosService.get(rugsResponse?.next).then((res) => {
         setRugsResponse({
           ...res.data,
-          results: [...rugsResponse.results, res.data.results],
+          results: [...rugsResponse.results, ...res.data.results],
         });
         setLoading(false);
       });
@@ -97,7 +97,6 @@ export default function HomePage(props: any) {
         50 <=
       document.documentElement.clientHeight
     ) {
-      console.log('loading next...');
       loadNextPage();
     }
   };
