@@ -69,7 +69,7 @@ export default function SiteHeader(props: {
         <Navbar.Collapse id='my-navbar'>
           <Nav className='me-auto'>
             <Navbar.Brand
-              href='https://github.com/benjaminJohnson2204/rugs-website'
+              href='https://github.com/benjaminJohnson2204/commerce-site-frontend'
               rel='noopener noreferrer'
               target='_blank'
             >
