@@ -56,23 +56,9 @@ function ProfilePage(props: { cookies: Cookies }) {
 
   const addStatusFilter = (e: any) => {
     if (e.target.checked) {
-      if (searchParams.get('status')) {
-        searchParams.set(
-          'status',
-          searchParams.get('status') + ',' + e.target.value
-        );
-      } else {
-        searchParams.set('status', e.target.value);
-      }
+      searchParams.set('status', e.target.value);
     } else {
-      if (searchParams.get('status')?.includes(',')) {
-        searchParams.set(
-          'status',
-          searchParams.get('status')!.replace(e.target.value, '')
-        );
-      } else {
-        searchParams.delete('status');
-      }
+      searchParams.delete('status');
     }
     setSearchParams(searchParams);
   };
