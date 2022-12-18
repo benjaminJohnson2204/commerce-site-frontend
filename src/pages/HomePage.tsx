@@ -25,6 +25,7 @@ export default function HomePage(props: any) {
   const [user, setUser] = useState<User>();
   const [admin, setAdmin] = useState(false);
   const [rugsResponse, setRugsResponse] = useState<RugListResponse>();
+  const [cart, setCart] = useState<Rug[]>();
   const [reloadCart, setReloadCart] = useState(false);
 
   const dispatch = useDispatch();
@@ -36,6 +37,12 @@ export default function HomePage(props: any) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [rugsResponse]);
+
+  useEffect(() => {
+    axiosService.get(`/api/cart`).then((res) => {
+      setCart(res.data['results']);
+    });
+  }, [reloadCart]);
 
   useEffect(() => {
     setLoading(true);
@@ -163,7 +170,7 @@ export default function HomePage(props: any) {
           <Row>
             <Col xs={12}>
               <h3>
-                {rugsResponse?.results.length || 0}{' '}
+                {rugsResponse?.count || 0}{' '}
                 {searchParams.get('search')
                   ? `rugs found for "${searchParams.get('search')}"`
                   : 'available rugs'}
@@ -182,8 +189,8 @@ export default function HomePage(props: any) {
                 <RugComponent
                   rug={rug}
                   isAuthenticated={authenticated}
-                  reloadCart={reloadCart}
-                  setReloadCart={setReloadCart}
+                  inCart={!!cart?.find((_rug) => rug.id === _rug.id)}
+                  reloadCart={() => setReloadCart((prevReload) => !prevReload)}
                 />
               </Col>
             ))}

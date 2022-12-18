@@ -18,23 +18,11 @@ function RugComponent(props: {
   rug: Rug;
   cookies: Cookies;
   isAuthenticated: boolean;
-  reloadCart: boolean;
-  setReloadCart: Function;
+  reloadCart: () => void;
+  inCart: boolean;
 }) {
-  const [inCart, setInCart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    axiosService
-      .get(`/api/cart/${props.rug.id}`)
-      .then((res) => {
-        setInCart(true);
-      })
-      .catch((err) => {
-        setInCart(false);
-      });
-  }, [props.reloadCart]);
 
   const addToCart = () => {
     axiosService
@@ -51,7 +39,7 @@ function RugComponent(props: {
     axiosService
       .delete(`/api/cart/${props.rug.id}`)
       .then((res) => {
-        props.setReloadCart(!props.reloadCart);
+        props.reloadCart();
       })
       .catch((err) => {
         navigate('/login');
@@ -80,7 +68,7 @@ function RugComponent(props: {
         </Card.Title>
         <Card.Text>{`$${props.rug.price}`}</Card.Text>
         {props.isAuthenticated ? (
-          inCart ? (
+          props.inCart ? (
             <>
               <Card.Text>This rug is in your cart</Card.Text>
               <div>
