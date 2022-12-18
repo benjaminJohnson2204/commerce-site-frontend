@@ -46,6 +46,7 @@ export default function SiteHeader(props: {
           setAuthenticated(true);
         })
         .catch((err) => {
+          dispatch(authSlice.actions.setAuthToken(null));
           setAuthenticated(false);
         });
     } else {
