@@ -51,7 +51,10 @@ function RugComponent(props: {
   };
 
   return (
-    <Card className='m-3 p-3' style={{ backgroundColor: '#E0E0E0' }}>
+    <Card
+      className='m-3 p-3'
+      style={{ backgroundColor: '#E0E0E0', height: 'calc(100% - 2rem)' }}
+    >
       <Card.Img
         onClick={goToRugPage}
         style={{ cursor: 'pointer' }}
