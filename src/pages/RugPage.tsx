@@ -68,7 +68,7 @@ function RugPage(props: { cookies: Cookies }) {
             <Row>
               {rug.image_url && (
                 <Col xs={12} md={6}>
-                  <Image src={rug.image_url} width='auto' height='100%' />
+                  <Image src={rug.image_url} width='100%' height='100%' />
                 </Col>
               )}
               <Col xs={12} md={6}>
